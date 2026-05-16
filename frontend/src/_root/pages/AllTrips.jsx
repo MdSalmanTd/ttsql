@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import API from '../../api/axios';
 import { useNavigate } from 'react-router-dom';
-import { LuDownload } from "react-icons/lu";
+import { LuDownload, LuSearch } from "react-icons/lu";
 
 const PAGE_SIZE = 10;
 
@@ -30,6 +30,7 @@ const AllTrips = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -46,9 +47,22 @@ const AllTrips = () => {
     fetchTrips();
   }, []);
 
+  const totalCost = trips.reduce((sum, trip) => sum + (parseFloat(trip.cost) || 0), 0);
+  const totalDeposit = trips.reduce((sum, trip) => sum + (parseFloat(trip.deposit) || 0), 0);
+
+  // Search filter
+  const filteredTrips = trips.filter(trip => 
+    (trip.driver?.fullname || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (trip.vehicle || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (trip.fromLocation || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (trip.toLocation || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (trip.comments || '').toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   // Pagination logic
-  const totalPages = Math.ceil(trips.length / PAGE_SIZE);
-  const paginatedTrips = trips.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+  const totalPages = Math.ceil(filteredTrips.length / PAGE_SIZE) || 1;
+  const paginatedTrips = filteredTrips.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
 
   const handleEdit = (id) => {
     navigate(`/edit-trip/${id}`);
@@ -68,17 +82,50 @@ const AllTrips = () => {
   };
 
   return (
-    <div className="p-10 w-full min-h-screen overflow-y-auto bg-black text-white">
+    <div className="p-4 md:p-10 w-full min-h-screen overflow-y-auto bg-black text-white">
       <div className="mb-6 flex justify-between">
       <h1 className="text-2xl font-bold">All Trips</h1>
         <button
           onClick={handleDownloadCSV}
           className="bg-white text-black px-4 py-3 flex items-center gap-2 rounded shadow hover:bg-gray-200 transition"
         >
-          <LuDownload className="h-5 w-5" />
-          Download CSV
+          <LuDownload className="h-5 w-5 hidden sm:block" />
+          <span className="hidden sm:inline">Download CSV</span>
+          <LuDownload className="h-5 w-5 sm:hidden" />
         </button>
       </div>
+
+      {!loading && !error && (
+        <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white p-6 rounded-2xl shadow">
+            <h2 className="text-lg text-gray-500 font-semibold mb-2">Total Cost</h2>
+            <p className="text-3xl font-bold text-gray-900">${totalCost.toFixed(2)}</p>
+          </div>
+          <div className="bg-white p-6 rounded-2xl shadow">
+            <h2 className="text-lg text-gray-500 font-semibold mb-2">Total Deposit</h2>
+            <p className="text-3xl font-bold text-gray-900">${totalDeposit.toFixed(2)}</p>
+          </div>
+        </div>
+      )}
+
+      {!loading && !error && (
+        <div className="mb-6 flex justify-end">
+          <div className="relative w-full sm:w-1/2 md:w-1/3">
+            <LuSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+            <input
+              type="text"
+              placeholder="Search trips..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1); // Reset to first page on search
+              }}
+              className="w-full pl-10 pr-4 py-2 rounded-lg bg-black border border-white/20 text-white focus:outline-none focus:border-white transition"
+            />
+          </div>
+        </div>
+      )}
+
       {loading ? (
         <div>Loading...</div>
       ) : error ? (

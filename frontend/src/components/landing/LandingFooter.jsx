@@ -9,7 +9,7 @@ export default function LandingFooter() {
         © {new Date().getFullYear()} TrackTruck — Fleet Operations Platform
       </span>
       <a
-        href="mailto:support@tracktruck.io"
+        href="https://github.com/mdsalmantd"
         style={display}
         className="text-[9px] tracking-[0.32em] uppercase text-white/20 hover:text-white/50 transition-colors"
       >
