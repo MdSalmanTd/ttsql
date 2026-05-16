@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+body {
+  background: #000000;
+  color: #ffffff;
+}
+
+/* Sci-fi landing */
+.hex-clip {
+  clip-path: polygon(8% 0%, 92% 0%, 100% 50%, 92% 100%, 8% 100%, 0% 50%);
+}
+
+.hex-grid-bg {
+  background-image:
+    linear-gradient(30deg, rgba(34, 211, 238, 0.06) 12%, transparent 12.5%, transparent 87%, rgba(34, 211, 238, 0.06) 87.5%, rgba(34, 211, 238, 0.06)),
+    linear-gradient(150deg, rgba(34, 211, 238, 0.06) 12%, transparent 12.5%, transparent 87%, rgba(34, 211, 238, 0.06) 87.5%, rgba(34, 211, 238, 0.06)),
+    linear-gradient(30deg, rgba(34, 211, 238, 0.06) 12%, transparent 12.5%, transparent 87%, rgba(34, 211, 238, 0.06) 87.5%, rgba(34, 211, 238, 0.06)),
+    linear-gradient(150deg, rgba(34, 211, 238, 0.06) 12%, transparent 12.5%, transparent 87%, rgba(34, 211, 238, 0.06) 87.5%, rgba(34, 211, 238, 0.06));
+  background-size: 48px 84px;
+  background-position: 0 0, 0 0, 24px 42px, 24px 42px;
+}
+
+.sci-fi-glow {
+  box-shadow: 0 0 24px rgba(34, 211, 238, 0.12), inset 0 0 20px rgba(34, 211, 238, 0.04);
+}
+
+.scanlines::after {
+  content: "";
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  opacity: 0.03;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 255, 255, 0.15) 2px,
+    rgba(255, 255, 255, 0.15) 4px
+  );
+}
+
+@keyframes landing-ticker {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.landing-ticker-track {
+  animation: landing-ticker 28s linear infinite;
+}
+
+.landing-ticker-track:hover {
+  animation-play-state: paused;
+}
